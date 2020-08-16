@@ -10,10 +10,9 @@
     "declaration": true,
     "outDir": "out",
     "sourceMap": true,
-    "inlineSourceMap": true,
     "rootDir": "src",
     "strict": true
   },
-  "exclude": ["lib", "node_modules", "src/**/*.spec.ts"],
+  "exclude": ["lib", "node_modules", "src/**/*.test.ts"],
   "include": ["src"]
 }

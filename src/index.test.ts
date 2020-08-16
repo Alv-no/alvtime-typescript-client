@@ -1,5 +1,5 @@
-import config from "./config";
 import createAlvtimeClient, { RequestOptions } from "./index";
+import fetch from "node-fetch";
 
 interface MockFetchResult {
   result: any;
@@ -25,6 +25,8 @@ function createMockFetch(result: any, status: number, statusText: string) {
   return mockFetch;
 }
 
+const apiHost = "http://alvtime-web-api";
+const testAccessToken = "5801gj90-jf39-5j30-fjk3-480fj39kl409";
 const mockPayload = "payload";
 const mockHost = "https://url";
 const mockDateRange = {
@@ -43,6 +45,16 @@ describe("getTasks", () => {
     )) as unknown) as MockFetchResult;
 
     expect(mockResult.result).toEqual(mockPayload);
+  });
+
+  it("Should return tasks from api", async () => {
+    const client = createAlvtimeClient(apiHost, fetch);
+
+    const result = ((await client.getTasks(
+      testAccessToken
+    )) as unknown) as MockFetchResult;
+
+    expect(result).toBeInstanceOf(Array);
   });
 });
 
