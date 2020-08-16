@@ -1,4 +1,4 @@
-import nodeFetch from "node-fetch";
+import createQueryMethods from "./queryMethods";
 
 interface Attributes {
   uri: string;
@@ -83,7 +83,7 @@ type FetchFunc = (
 
 export default function createAlvtimeClient(
   uri: string,
-  fetch: FetchFunc = nodeFetch
+  fetch: FetchFunc
 ): Client {
   async function fetcher(url: string, init: RequestOptions) {
     const response = await fetch(url, init);
@@ -93,20 +93,7 @@ export default function createAlvtimeClient(
     return response.json();
   }
 
-  function getHeaders(accessToken: string) {
-    return {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-  }
-
-  function concatURL(path: string, queryParams?: { [key: string]: string }) {
-    const url = new URL(uri + path);
-    if (queryParams) url.search = new URLSearchParams(queryParams).toString();
-    return url.toString();
-  }
+  const { concatURL, getHeaders } = createQueryMethods(uri);
 
   return {
     getTasks(accessToken: string) {

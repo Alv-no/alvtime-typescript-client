@@ -1,5 +1,4 @@
 import config from "./config";
-import env from "./environment";
 import createAlvtimeClient, { RequestOptions } from "./index";
 
 interface MockFetchResult {
@@ -37,11 +36,11 @@ const mockAccessToken = "super secret access token";
 describe("getTasks", () => {
   it("Should return tasks", async () => {
     const mockFetch = createMockFetch(mockPayload, 200, "");
-    const client = createAlvtimeClient(env.ALVTIME_API_URI, mockFetch);
+    const client = createAlvtimeClient(mockHost, mockFetch);
 
     const mockResult = ((await client.getTasks(
-      config.TEST_ACCESS_TOKEN
-    )) as undefined) as MockFetchResult;
+      "super secret access token"
+    )) as unknown) as MockFetchResult;
 
     expect(mockResult.result).toEqual(mockPayload);
   });
@@ -57,7 +56,7 @@ describe("getTimeEntries", () => {
       mockResult = ((await client.getTimeEntries(
         mockDateRange,
         mockAccessToken
-      )) as undefined) as MockFetchResult;
+      )) as unknown) as MockFetchResult;
     });
 
     it("Should return timeEntries", async () => {
@@ -71,30 +70,17 @@ describe("getTimeEntries", () => {
     });
 
     it("Should include access token", () => {
+      //@ts-ignore
       expect(mockResult.init.headers["Authorization"]).toEqual(
         "Bearer " + mockAccessToken
       );
     });
 
     it("Should set Content-Type to application/json", () => {
+      //@ts-ignore
       expect(mockResult.init.headers["Content-Type"]).toEqual(
         "application/json"
       );
-    });
-  });
-
-  describe("Error path", () => {
-    it("Should throw error if status is not 200", () => {
-      const mockStatusText = "mock status text";
-      const mockFetch = createMockFetch(mockPayload, 666, mockStatusText);
-      const client = createAlvtimeClient(mockHost, mockFetch);
-
-      const mockResultPromise = client.getTimeEntries(
-        mockDateRange,
-        mockAccessToken
-      );
-
-      expect(mockResultPromise).rejects.toThrowError(mockStatusText);
     });
   });
 });
