@@ -15,14 +15,19 @@ on:
       - "package.json"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: "test"
       - run: echo test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
 
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
