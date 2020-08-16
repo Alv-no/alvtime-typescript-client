@@ -21,6 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: "test"
+      - run: echo test
+
       - name: "Automated Version Bump"
         uses: "phips28/gh-action-bump-version@master"
 
