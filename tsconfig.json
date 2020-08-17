@@ -8,11 +8,11 @@
     "lib": ["es6", "es2015"],
     "types": ["node", "jest"],
     "declaration": true,
-    "outDir": "out",
+    "outDir": "dist",
     "sourceMap": true,
     "rootDir": "src",
     "strict": true
   },
-  "exclude": ["lib", "node_modules", "src/**/*.test.ts"],
+  "exclude": ["dist", "node_modules", "src/**/*.test.ts"],
   "include": ["src"]
 }
