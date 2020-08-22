@@ -8,10 +8,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run build-ts && npm run lint",
+    "build": "npm run build-ts",
     "build-ts": "tsc",
     "build:check": "tsc --noEmit",
-    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "watch-test": "npm run test -- --watchAll",
     "test": "jest --forceExit --coverage --verbose"
   },
