@@ -17,10 +17,5 @@ jobs:
       - name: Set up environment
         run: docker-compose -f .devcontainer/docker-compose.yaml up -d && sleep 5
 
-      - name: Run ls and echo
-        run: |
-          docker-compose -f .devcontainer/docker-compose.yaml run alvtime-typescript-client ls -la
-          docker-compose -f .devcontainer/docker-compose.yaml run alvtime-typescript-client ls -la node-modules
-
       - name: Run tests
         run: docker-compose -f .devcontainer/docker-compose.yaml run alvtime-typescript-client npm test
