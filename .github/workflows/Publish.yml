@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - "package.json"
 
+jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
