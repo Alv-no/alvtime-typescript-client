@@ -1,25 +1,10 @@
-import createQueryMethods from "./queryMethods";
-
-interface Attributes {
-  uri: string;
-}
+import { queryParamsToString } from "./queryMethods";
 
 export interface RequestOptions {
   method?: string;
   headers?: { [key: string]: string };
   body?: string;
 }
-
-interface PrivateMethods {
-  fetcher: (
-    url: string,
-    init?: RequestOptions
-  ) => Promise<Task[] & TimeEntrie[] & ReportTimeEntrie[]>;
-  getHeaders: (accessToken: string) => { headers: { [key: string]: string } };
-  concatURL: (path: string, queryParams?: { [key: string]: string }) => string;
-}
-
-interface State extends Attributes, PrivateMethods {}
 
 interface DateRange {
   [key: string]: string;
@@ -59,7 +44,21 @@ export interface ReportTimeEntrie {
   taskId: number;
 }
 
+export interface AccessTokenCreatedInfo {
+  friendlyname: string;
+  expiryDate: string;
+}
+
+export interface AccessTokenInfo extends AccessTokenCreatedInfo {
+  id: number;
+}
+
 export interface AlvtimeApiClient {
+  createAccessToken: (friendlyName: string) => Promise<AccessTokenInfo[]>;
+  deleteAccessTokens: (
+    tokenIds: { tokenId: number }[]
+  ) => Promise<AccessTokenInfo[]>;
+  getActiveAccessTokens: () => Promise<AccessTokenInfo[]>;
   getTasks: () => Promise<Task[]>;
   editFavoriteTasks: (tasks: Task[]) => Promise<Task[]>;
   getTimeEntries: (dateRange: DateRange) => Promise<TimeEntrie[]>;
@@ -95,6 +94,24 @@ export default function createAlvtimeClient(
   }
 
   return {
+    createAccessToken(friendlyName: string) {
+      const method = "post";
+      const body = JSON.stringify({ friendlyName });
+      const options = { method, body };
+      return alvtimeAPIFetcher("/api/user/AccessToken", options);
+    },
+
+    deleteAccessTokens(tokenIds: { tokenId: number }[]) {
+      const method = "delete";
+      const body = JSON.stringify(tokenIds);
+      const options = { method, body };
+      return alvtimeAPIFetcher("/api/user/AccessToken", options);
+    },
+
+    getActiveAccessTokens() {
+      return alvtimeAPIFetcher("/api/user/ActiveAccessTokens");
+    },
+
     getTasks() {
       return alvtimeAPIFetcher("/api/user/tasks");
     },

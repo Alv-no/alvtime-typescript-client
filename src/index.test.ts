@@ -48,9 +48,7 @@ describe("getTasks", () => {
 
   it("Should return tasks from api", async () => {
     const client = createAlvtimeClient(apiHost, getTestAccessToken, fetch);
-
-    const result = ((await client.getTasks()) as unknown) as MockFetchResult;
-
+    const result = await client.getTasks();
     expect(result).toBeInstanceOf(Array);
   });
 });
@@ -93,6 +91,39 @@ describe("getTimeEntries", () => {
       expect(mockResult.init.headers["Content-Type"]).toEqual(
         "application/json"
       );
+    });
+  });
+});
+
+describe("AccessToken", () => {
+  let client = createAlvtimeClient(apiHost, getTestAccessToken, fetch);
+  beforeEach(() => {
+    client = createAlvtimeClient(apiHost, getTestAccessToken, fetch);
+  });
+
+  describe("getAccessToken", () => {
+    test("Should get access token info from api", async () => {
+      const result = await client.getActiveAccessTokens();
+      expect(result).toBeInstanceOf(Array);
+    });
+  });
+
+  describe("createAccessToken", () => {
+    test("Should create an accessToken", async () => {
+      const result = await client.createAccessToken("super friendly");
+      expect(result).toHaveProperty("token");
+      expect(result).toHaveProperty("expiryDate");
+    });
+  });
+
+  describe("deleteAccessToken", () => {
+    test("Should return access token info", async () => {
+      await client.createAccessToken("super friendly");
+      const result = await client.deleteAccessTokens([{ tokenId: 2 }]);
+      expect(result).toBeInstanceOf(Array);
+      expect(result[0]).toHaveProperty("id");
+      expect(result[0]).toHaveProperty("friendlyName");
+      expect(result[0]).toHaveProperty("expiryDate");
     });
   });
 });
