@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+
+[ "up" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml up -d
+
+[ "down" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml down --volumes
+
+[ "logs" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml logs -f
+
+[ "pull" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml pull
+
+[ "build" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml build
+
+[ "test" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml exec alvtime-typescript-client npm run test
+
+[ "watch-test" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml exec alvtime-typescript-client npm run watch-test
+
+[ "lint" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml exec alvtime-typescript-client npm run lint
+
+[ "debug" = "$1" ] && \
+  docker-compose -f .devcontainer/docker-compose.yaml exec alvtime-typescript-client npm run debug
+
+[ "prune" = "$1" ] && \
+  docker system prune -f
+
+exit 0

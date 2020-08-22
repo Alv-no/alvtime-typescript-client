@@ -27,32 +27,29 @@ function createMockFetch(result: any, status: number, statusText: string) {
 
 const apiHost = "http://alvtime-web-api";
 const testAccessToken = "5801gj90-jf39-5j30-fjk3-480fj39kl409";
+const getTestAccessToken = (): Promise<string> =>
+  new Promise((r) => r(testAccessToken));
 const mockPayload = "payload";
 const mockHost = "https://url";
 const mockDateRange = {
   fromDateInclusive: "2019-01-01",
   toDateInclusive: "2020-03-01",
 };
-const mockAccessToken = "super secret access token";
 
 describe("getTasks", () => {
   it("Should return tasks", async () => {
     const mockFetch = createMockFetch(mockPayload, 200, "");
-    const client = createAlvtimeClient(mockHost, mockFetch);
+    const client = createAlvtimeClient(mockHost, getTestAccessToken, mockFetch);
 
-    const mockResult = ((await client.getTasks(
-      "super secret access token"
-    )) as unknown) as MockFetchResult;
+    const mockResult = ((await client.getTasks()) as unknown) as MockFetchResult;
 
     expect(mockResult.result).toEqual(mockPayload);
   });
 
   it("Should return tasks from api", async () => {
-    const client = createAlvtimeClient(apiHost, fetch);
+    const client = createAlvtimeClient(apiHost, getTestAccessToken, fetch);
 
-    const result = ((await client.getTasks(
-      testAccessToken
-    )) as unknown) as MockFetchResult;
+    const result = ((await client.getTasks()) as unknown) as MockFetchResult;
 
     expect(result).toBeInstanceOf(Array);
   });
@@ -63,11 +60,14 @@ describe("getTimeEntries", () => {
     let mockResult: MockFetchResult;
     beforeEach(async () => {
       const mockFetch = createMockFetch(mockPayload, 200, "");
-      const client = createAlvtimeClient(mockHost, mockFetch);
+      const client = createAlvtimeClient(
+        mockHost,
+        getTestAccessToken,
+        mockFetch
+      );
 
       mockResult = ((await client.getTimeEntries(
-        mockDateRange,
-        mockAccessToken
+        mockDateRange
       )) as unknown) as MockFetchResult;
     });
 
@@ -84,7 +84,7 @@ describe("getTimeEntries", () => {
     it("Should include access token", () => {
       //@ts-ignore
       expect(mockResult.init.headers["Authorization"]).toEqual(
-        "Bearer " + mockAccessToken
+        "Bearer " + testAccessToken
       );
     });
 

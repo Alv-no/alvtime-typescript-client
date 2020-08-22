@@ -12,7 +12,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   alvtime-web-api:
-    image: alvnoas/alvtime-web-api:latest
+    image: docker.pkg.github.com/alv-no/alvtime-go-client/alvtime-web-api-no-auth:latest
     links:
       - alvtime-database
     environment:
