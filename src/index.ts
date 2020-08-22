@@ -59,73 +59,70 @@ export interface ReportTimeEntrie {
   taskId: number;
 }
 
-export interface Client {
-  getTasks: (accessToken: string) => Promise<Task[]>;
-  editFavoriteTasks: (tasks: Task[], accessToken: string) => Promise<Task[]>;
-  getTimeEntries: (
-    dateRange: DateRange,
-    accessToken: string
-  ) => Promise<TimeEntrie[]>;
-  editTimeEntries: (
-    timeEntries: TimeEntrie[],
-    accessToken: string
-  ) => Promise<TimeEntrie[]>;
-  getTimeEntriesReport: (
-    dateRange: DateRange,
-    accessToken: string
-  ) => Promise<ReportTimeEntrie[]>;
+export interface AlvtimeApiClient {
+  getTasks: () => Promise<Task[]>;
+  editFavoriteTasks: (tasks: Task[]) => Promise<Task[]>;
+  getTimeEntries: (dateRange: DateRange) => Promise<TimeEntrie[]>;
+  editTimeEntries: (timeEntries: TimeEntrie[]) => Promise<TimeEntrie[]>;
+  getTimeEntriesReport: (dateRange: DateRange) => Promise<ReportTimeEntrie[]>;
 }
 
 type FetchFunc = (
   uri: string,
-  init: RequestOptions
+  options: RequestOptions
 ) => Promise<{ json(): Promise<any>; status: number; statusText: string }>;
+
+type AccessTokenGetter = () => Promise<string>;
 
 export default function createAlvtimeClient(
   uri: string,
+  getAccessToken: AccessTokenGetter,
   fetch: FetchFunc
-): Client {
-  async function fetcher(url: string, init: RequestOptions) {
-    const response = await fetch(url, init);
+): AlvtimeApiClient {
+  async function alvtimeAPIFetcher(path: string, options: RequestOptions = {}) {
+    let url = uri + path;
+    const accessToken = await getAccessToken();
+    const headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    };
+    const requestOptions = { ...options, headers };
+    const response = await fetch(url, requestOptions);
     if (response.status !== 200) {
       throw response.statusText;
     }
     return response.json();
   }
 
-  const { concatURL, getHeaders } = createQueryMethods(uri);
-
   return {
-    getTasks(accessToken: string) {
-      return fetcher(concatURL("/api/user/tasks"), {
-        ...getHeaders(accessToken),
-      });
+    getTasks() {
+      return alvtimeAPIFetcher("/api/user/tasks");
     },
 
-    editFavoriteTasks(tasks: Task[], accessToken: string) {
+    editFavoriteTasks(tasks: Task[]) {
       const method = "post";
       const body = JSON.stringify(tasks);
-      const init = { method, ...getHeaders(accessToken), body };
-      return fetcher(concatURL("/api/user/Tasks"), init);
+      const options = { method, body };
+      return alvtimeAPIFetcher("/api/user/Tasks", options);
     },
 
-    getTimeEntries(dateRange: DateRange, accessToken: string) {
-      return fetcher(concatURL("/api/user/TimeEntries", dateRange), {
-        ...getHeaders(accessToken),
-      });
+    getTimeEntries(dateRange: DateRange) {
+      return alvtimeAPIFetcher(
+        "/api/user/TimeEntries" + queryParamsToString(dateRange)
+      );
     },
 
-    editTimeEntries(timeEntries: TimeEntrie[], accessToken: string) {
+    editTimeEntries(timeEntries: TimeEntrie[]) {
       const method = "post";
       const body = JSON.stringify(timeEntries);
-      const init = { method, ...getHeaders(accessToken), body };
-      return fetcher(concatURL("/api/user/TimeEntries"), init);
+      const options = { method, body };
+      return alvtimeAPIFetcher("/api/user/TimeEntries", options);
     },
 
-    getTimeEntriesReport(dateRange: DateRange, accessToken: string) {
-      return fetcher(concatURL("/api/user/TimeEntriesReport", dateRange), {
-        ...getHeaders(accessToken),
-      });
+    getTimeEntriesReport(dateRange: DateRange) {
+      return alvtimeAPIFetcher(
+        "/api/user/TimeEntriesReport" + queryParamsToString(dateRange)
+      );
     },
   };
 }
