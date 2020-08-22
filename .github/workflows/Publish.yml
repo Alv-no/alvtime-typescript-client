@@ -9,18 +9,6 @@ on:
     branches: [master]
     paths-ignore:
       - "package.json"
-  pull_request:
-    branches: [master]
-    paths-ignore:
-      - "package.json"
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - run: echo test
 
   build:
     needs: test
