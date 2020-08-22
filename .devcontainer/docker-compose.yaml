@@ -7,7 +7,7 @@ services:
       dockerfile: .devcontainer/Dockerfile
     volumes:
       - ..:/workspace
-      - /usr/src/app/node_modules/
+      - /workspace/node_modules/
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   alvtime-web-api:
