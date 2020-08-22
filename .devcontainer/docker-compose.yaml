@@ -5,10 +5,9 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-    ports:
-      - "5000:5000"
     volumes:
       - ..:/workspace
+      - /workspace/node_modules/
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   alvtime-web-api:

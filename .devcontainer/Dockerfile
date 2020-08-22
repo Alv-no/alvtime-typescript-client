@@ -8,3 +8,6 @@
 FROM mcr.microsoft.com/vscode/devcontainers/typescript-node:12
 
 WORKDIR /workspace
+
+COPY package*.json ./
+RUN npm install
